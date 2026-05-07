@@ -1,0 +1,94 @@
+{
+  // openclaw.json.example
+  //
+  // Guardrails and W&B Inference provider configuration.
+  // Merge the blocks you need into your ~/.openclaw/openclaw.json.
+  // After any change: openclaw gateway restart
+
+  // ------------------------------------------------------------------
+  // Channel security
+  // Replace YOUR_TELEGRAM_USER_ID with your actual ID.
+  // Find it by messaging @userinfobot on Telegram.
+  // ------------------------------------------------------------------
+  "channels": {
+    "telegram": {
+      "allowFrom": ["YOUR_TELEGRAM_USER_ID"],
+      "groups": {
+        "*": {
+          "requireMention": true
+        }
+      }
+    }
+  },
+
+  "messages": {
+    "groupChat": {
+      "mentionPatterns": ["@openclaw"]
+    }
+  },
+
+  // ------------------------------------------------------------------
+  // Agent defaults
+  //
+  // contextTokens: caps the total context window per session.
+  // Without this, long sessions accumulate context exponentially.
+  // Gemini 2.5 Pro with defaults can hit 1.9M+ input tokens in a
+  // few dozen calls. 50k is a safe starting point.
+  //
+  // maxConcurrent: limits parallel LLM requests from this agent.
+  // Keeps costs linear and prevents runaway parallel tool calls.
+  // ------------------------------------------------------------------
+  "agents": {
+    "defaults": {
+      "model": {
+        "primary": "openai/gpt-4.1-mini"
+      },
+      "contextTokens": 50000,
+      "maxConcurrent": 2,
+      "subagents": {
+        "maxConcurrent": 4
+      },
+      "compaction": {
+        "mode": "safeguard"
+      }
+    }
+  },
+
+  // ------------------------------------------------------------------
+  // W&B Inference as a custom provider
+  //
+  // W&B Inference exposes an OpenAI-compatible endpoint, so
+  // api: "openai-completions" is the correct value.
+  //
+  // IMPORTANT: mode: "merge" adds this provider alongside your existing
+  // ones. Without it, this block replaces all providers and you lose
+  // access to OpenAI and Anthropic.
+  //
+  // After adding this block, run:
+  //   openclaw gateway restart
+  //   /models   (to confirm the provider loaded)
+  //   /model wandb-inference/YOUR_MODEL_ID   (to switch to it)
+  // ------------------------------------------------------------------
+  "models": {
+    "mode": "merge",
+    "providers": {
+      "wandb-inference": {
+        "baseUrl": "https://api.wandb.ai/inference/v1",
+        "apiKey": "${WANDB_API_KEY}",
+        "api": "openai-completions",
+        "models": [
+          {
+            "id": "YOUR_WANDB_MODEL_ID",
+            "name": "W&B Inference: YOUR_WANDB_MODEL_ID",
+            "contextTokens": 128000,
+            "maxTokens": 4096,
+            "cost": {
+              "input":  1.00,
+              "output": 3.00
+            }
+          }
+        ]
+      }
+    }
+  }
+}
