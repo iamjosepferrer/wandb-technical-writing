@@ -1,0 +1,37 @@
+# Qwen3-TTS fine-tuning tutorial — LJSpeech edition
+# Install with: pip install -r requirements.txt
+#
+# Note: flash-attn is optional and speeds up training ~2x on A100/H100.
+# Install it separately after everything else if your GPU supports it:
+#   pip install flash-attn --no-build-isolation
+
+# Core TTS package
+qwen-tts>=0.1.0
+
+# Training
+torch>=2.2.0
+transformers==4.57.3
+accelerate>=0.30.0
+bitsandbytes>=0.43.0
+
+# Audio processing
+soundfile>=0.12.1
+librosa>=0.10.0
+pydub>=0.25.1
+
+# Transcription (only needed if you use 02_transcribe.py with your own recordings)
+openai-whisper>=20231117
+
+# Voice similarity evaluation
+resemblyzer>=0.1.1.dev0
+
+# Speech metrics (WER)
+jiwer>=3.0.3
+
+# W&B experiment tracking
+wandb>=0.17.0
+
+# Utilities
+python-dotenv>=1.0.0
+tqdm>=4.66.0
+numpy>=1.24.0
