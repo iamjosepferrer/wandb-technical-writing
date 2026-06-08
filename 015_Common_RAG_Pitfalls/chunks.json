@@ -1,0 +1,62 @@
+[
+  {
+    "chunk_id": "api_models.md__00",
+    "source": "api_models.md",
+    "char_count": 1403,
+    "text": "# API Models Reference\n\n## Available Models\n\nThe platform provides access to the following models: gpt-4o, gpt-4o-mini,\ntext-embedding-3-small, and text-embedding-3-large. Each model is designed for specific\nuse cases and has different performance and cost characteristics.\n\n## Chat Completion Models\n\ngpt-4o is the highest-capability model available. It has a 128,000-token context\nwindow and supports text and image inputs. It produces the strongest results for complex\nreasoning, analysis, and generation tasks. The cost is $5.00 per million input tokens\nand $15.00 per million output tokens.\n\ngpt-4o-mini is optimized for speed and cost efficiency while retaining strong language\nunderstanding. It has a 128,000-token context window and is recommended for tasks that\nare straightforward or latency-sensitive. The cost is $0.15 per million input tokens\nand $0.60 per million output tokens. Most developers should start with gpt-4o-mini and\nupgrade to gpt-4o only where the quality difference is measurable.\n\n## Embedding Models\n\ntext-embedding-3-small produces 1536-dimensional vectors and is the recommended choice\nfor new projects. It outperforms the previous generation text-embedding-ada-002 model\nat a lower cost. The cost is $0.02 per million tokens. Because the model is smaller, it\nalso has lower latency, making it well-suited for real-time applications that require\nembedding at query time."
+  },
+  {
+    "chunk_id": "api_models.md__01",
+    "source": "api_models.md",
+    "char_count": 1239,
+    "text": "text-embedding-3-large produces 3072-dimensional vectors and achieves higher retrieval\naccuracy on benchmarks. The cost is $0.13 per million tokens, which is more than six\ntimes the cost of text-embedding-3-small. The quality improvement is meaningful but\nnot always worth the cost increase. Run an offline evaluation on your specific retrieval\ntask before committing to the larger model.\n\n## Choosing an Embedding Model\n\nFor most RAG and semantic search applications, text-embedding-3-small is the right\nstarting point. Its 1536-dimensional vectors are large enough to capture nuanced\nsemantics for most domain-specific corpora. Switch to text-embedding-3-large if offline\nevaluation shows that retrieval quality is limiting your application's performance.\nImportant: once you have indexed a corpus with one embedding model, you must re-index\nwith the other model before switching. Mixing index and query embeddings from different\nmodels produces incorrect similarity scores and silently degrades retrieval quality.\n\n## Rate Limits\n\nRate limits are applied per API key. The Standard plan allows 3,500 requests per minute\nfor chat completion and 1,000,000 tokens per minute for embeddings. Contact support to\nrequest a rate limit increase."
+  },
+  {
+    "chunk_id": "custom_llm_guide.md__00",
+    "source": "custom_llm_guide.md",
+    "char_count": 1459,
+    "text": "# Custom LLM Fine-Tuning Guide\n\n## Minimum Training Examples\n\nA custom model requires a minimum of 50 training examples to start the fine-tuning\nprocess. This is the absolute minimum; models trained on 50 examples will show limited\nimprovement over the base model. For reliable performance gains, a dataset of 100 or\nmore high-quality examples is recommended. High quality means diverse, well-formatted\nexamples that cover the range of inputs the model will encounter in production.\nQuantity alone does not guarantee quality. A dataset of 50 carefully curated examples\nconsistently outperforms a dataset of 200 noisy examples.\n\n## Training Data Format\n\nTraining data must be submitted in JSONL format. Each line in the file is a valid JSON\nobject with a messages field that follows the standard chat completion format. The file\ncannot exceed 100 MB in size. Files that fail format validation are rejected before\nbilling begins. A dry-run endpoint is available at POST /v1/fine-tunes/validate to\ncheck your file before submitting a full training job.\n\n## Base Models\n\nFine-tuning is supported on the following base models: gpt-4o-mini and gpt-3.5-turbo.\nLarger models are not available for fine-tuning. The choice of base model should be\ndriven by your latency and cost requirements. gpt-4o-mini produces stronger results for\ncomplex reasoning tasks, while gpt-3.5-turbo is faster and cheaper if your use case is\nstraightforward.\n\n## Training Duration and Cost"
+  },
+  {
+    "chunk_id": "custom_llm_guide.md__01",
+    "source": "custom_llm_guide.md",
+    "char_count": 892,
+    "text": "## Training Duration and Cost\n\nA training job for 100 examples typically completes in approximately two hours.\nTraining time scales roughly linearly with dataset size. Fine-tuning is billed at\n$0.003 per training token. The training token count equals the total tokens across all\nexamples multiplied by the number of epochs, which defaults to three. You can override\nthe epoch count with the n_epochs parameter, though reducing epochs below three is not\nrecommended for datasets under 500 examples.\n\n## Evaluating a Fine-Tuned Model\n\nThe platform automatically holds out 10 percent of your training data for evaluation.\nAfter training completes, the evaluation results appear in the fine-tuning dashboard,\nincluding accuracy, loss curve, and sample completions. You should also run your own\noffline evaluation on a separate held-out test set before deploying a fine-tuned model\nto production."
+  },
+  {
+    "chunk_id": "data_retention.md__00",
+    "source": "data_retention.md",
+    "char_count": 1352,
+    "text": "# Data Retention Policy\n\n## API Request Logs\n\nThe platform retains API request logs for 30 days. Request logs include the endpoint\ncalled, timestamp, request headers, and anonymized input metadata. Response content is\nnot stored in request logs. After 30 days, logs are permanently deleted and cannot be\nrecovered. Enterprise customers can request extended log retention of up to 12 months\nthrough a support ticket. Extended retention is billed at a per-gigabyte monthly rate.\n\n## Model Outputs\n\nModel outputs are not stored by default. If your application needs to reference\nprevious model outputs, implement storage in your own database. For debugging and\naudit purposes, developers can enable response logging through the API settings panel.\nWhen response logging is enabled, outputs are retained for 7 days and then permanently\ndeleted. Enabling response logging counts toward your storage quota.\n\n## User Account Data\n\nUser account data, including email addresses, billing information, and profile settings,\nis retained for the lifetime of the account. When an account is deleted, all personally\nidentifiable information is removed within 30 days in compliance with GDPR Article 17.\nAPI keys associated with a deleted account are immediately revoked. Usage statistics\nare retained in anonymized form after account deletion.\n\n## GDPR and Compliance"
+  },
+  {
+    "chunk_id": "data_retention.md__01",
+    "source": "data_retention.md",
+    "char_count": 434,
+    "text": "## GDPR and Compliance\n\nThe platform is GDPR-compliant. Users in the European Union can submit data access\nrequests through the privacy portal. Data export requests are fulfilled within 72 hours.\nData deletion requests are processed within 30 days. If you process personal data\nthrough the platform on behalf of EU data subjects, you should review the Data\nProcessing Agreement available in the legal section of your account settings."
+  },
+  {
+    "chunk_id": "image_policy.md__00",
+    "source": "image_policy.md",
+    "char_count": 1501,
+    "text": "# Image Upload Policy\n\n## Supported Formats\n\nThe platform accepts the following image formats: PNG, JPEG, GIF, WebP, and BMP.\nPNG is recommended for screenshots and diagrams that require transparency or lossless\ncompression. JPEG works best for photographs and images with complex color gradients.\nGIF is limited to 256 colors and is suitable for simple animations. WebP provides\nsuperior compression compared to JPEG and PNG at equivalent quality and is the\nrecommended format for web assets. BMP is accepted but not recommended because its\nuncompressed nature produces large file sizes.\n\n## File Size Limits\n\nThe maximum file size for a single image upload is 10 MB. Files that exceed this limit\nare automatically rejected with a 413 error code. Attempting to resize a file\nclient-side before upload is acceptable but not required for files within the size\nlimit. The platform does not impose a monthly storage quota for the Standard and\nProfessional plans. Enterprise plans have configurable storage quotas managed through\nthe admin console.\n\n## Batch Uploads\n\nDevelopers can upload up to 20 images in a single API call using the batch endpoint at\nPOST /v1/images/batch. Each image in the batch is processed independently, which means\na single failure does not block the remaining uploads. The batch endpoint returns a list\nof results with status codes for each item. Successful uploads return a 201 status code\nand an image ID. Failed uploads include an error code and message.\n\n## Image Retention"
+  },
+  {
+    "chunk_id": "image_policy.md__01",
+    "source": "image_policy.md",
+    "char_count": 423,
+    "text": "## Image Retention\n\nUploaded images are stored for 90 days from the date of upload. After 90 days, images\nare permanently deleted and cannot be recovered. If your application requires permanent\nstorage, download images before the retention window expires and store them in your own\ninfrastructure. The platform sends an email notification 7 days before each image\nexpires if email notifications are enabled for the account."
+  },
+  {
+    "chunk_id": "support_faq.md__00",
+    "source": "support_faq.md",
+    "char_count": 1324,
+    "text": "# Support FAQ\n\n## Understanding API Error Codes\n\nA 429 error means your application has exceeded the allowed number of requests per\nminute or tokens per minute for your plan. The response headers include Retry-After,\nwhich specifies how many seconds to wait before retrying. Implement exponential backoff\nin your application: wait 1 second, retry, wait 2 seconds on the next failure, wait\n4 seconds, and so on up to a maximum of 60 seconds. Do not retry immediately after a\n429. Persistent 429 errors during normal usage indicate that you should request a rate\nlimit increase through the account settings.\n\nA 401 error means the API key in the request is invalid, has been revoked, or does not\nhave permission for the requested resource. Check that the Authorization header is\nformatted as Bearer YOUR_API_KEY with no extra spaces. If your API key was recently\nregenerated, ensure the old key has been replaced everywhere it is used. Keys can be\nmanaged in the API Keys section of your account settings.\n\nA 503 error indicates temporary service degradation or a planned maintenance window.\nCheck the status page at status.example.com for current information. During service\ndegradation, implement the same exponential backoff strategy used for 429 errors. 503\nerrors typically resolve within 15 minutes.\n\n## Response Latency"
+  },
+  {
+    "chunk_id": "support_faq.md__01",
+    "source": "support_faq.md",
+    "char_count": 730,
+    "text": "## Response Latency\n\nAverage response latency for the Standard plan is under 2 seconds for requests up to\n1000 tokens. Requests with longer prompts or larger outputs have proportionally higher\nlatency. Streaming mode reduces the time to first token. For latency-sensitive\napplications, use the smallest model that meets your quality requirements.\n\n## Enterprise SLA\n\nEnterprise customers are covered by a 99.9 percent uptime SLA, measured monthly.\nDowntime that falls below the SLA threshold is credited back as service credits applied\nto the next invoice. SLA credits require a formal support ticket filed within 30 days\nof the incident. Credits do not apply to planned maintenance windows announced at least\n48 hours in advance."
+  }
+]
